@@ -1,0 +1,21 @@
+[
+  {
+    "id": "252023101",
+    "keyID": "lua_env_loaded",
+    "part": "0",
+    "goal": "0",
+    "active": "0",
+    "characterGroup": "0",
+    "relation": "0",
+    "condition": "0",
+    "weight": "10000",
+    "group": "0",
+    "icon": "0",
+    "pointColor": "01",
+    "vocal": "0",
+    "emotionID": "0",
+    "ch": "LuaEnv 成功加载.",
+    "tc": "Lua env successfully loaded.",
+    "en": "Lua env successfully loaded."
+  },
+]

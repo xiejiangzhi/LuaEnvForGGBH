@@ -1,0 +1,20 @@
+[
+  {
+    "id": "252023101",
+    "uiType": "2",
+    "condition": "lua_test-cond_xxx_123_321_asdf",
+    "weight": "1",
+    "npcLeft": "0",
+    "npcRight": "0",
+    "speaker": "1",
+    "backgroud": "chuansongdaozhong1",
+    "soundsBg": "0",
+    "soundsEffect": "0",
+    "title": "0",
+    "dialogue": "lua_env_loaded",
+    "openFunction": "0",
+    "function": "addFeature_lua_test-func_222_4333_asdf",
+    "options": "0",
+    "nextDialogue": "0"
+  },
+]

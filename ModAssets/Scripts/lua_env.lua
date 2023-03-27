@@ -16,7 +16,7 @@ end
 require 'lua_env.import'
 
 
-_G.set_enable_debug_log(true)
+_G.set_enable_debug_log(false)
 print('Setup lua env.')
 
 ModFuncs = {}

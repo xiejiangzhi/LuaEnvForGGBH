@@ -18,7 +18,7 @@ namespace MOD_LuaEnv.GameHook {
         public static bool Prefix(DramaFunction __instance, Il2CppStringArray values) {
             var rawCommand = string.Join("_", values);
             Logger.Msg($"加载 lua 指令：{rawCommand}");
-            if (values.Count < 2) { return true; }
+            if (values.Count <= 2) { return true; }
             var command = values[1];
             if (command != "lua") { return true; }
             var fn_name = values[2];

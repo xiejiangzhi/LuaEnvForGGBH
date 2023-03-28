@@ -19,6 +19,7 @@ print('Setup lua env.')
 require 'lua_env.logger'
 
 require 'lua_env.import'
+require 'lua_env.CLRPackage'
 require 'lua_env.ext'
 
 require 'lua_env.drama'

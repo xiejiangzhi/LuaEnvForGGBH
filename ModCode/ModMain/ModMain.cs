@@ -2,6 +2,7 @@
 using System.IO;
 using System.Text;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using HarmonyLib;
 using MelonLoader;
 using UnhollowerBaseLib;
@@ -19,10 +20,15 @@ using MOD_LuaEnv.GameHook;
 namespace MOD_LuaEnv
 {
 
+
     /// <summary>
     /// 此类是模组的主类
     /// </summary>
     public class ModMain {
+        [DllImport("kernel32.dll", CharSet=CharSet.Auto)]
+        private static extern void SetDllDirectory(string lpPathName);
+
+
         public static Lua LuaState;
 
         public static string ModID = "WjCh9C";
@@ -33,7 +39,6 @@ namespace MOD_LuaEnv
         public static Lazy<string> InitLuaEnvPath { get; } =
             new Lazy<string>(() => Path.Combine(DefaultScriptDir.Value, "lua_env.lua"));
 
-
         private TimerCoroutine corUpdate;
         private static HarmonyLib.Harmony harmony;
 
@@ -42,6 +47,8 @@ namespace MOD_LuaEnv
         /// </summary>
         public void Init()
         {
+            var dll_dir = Path.Combine(ModHomePath.Value, "ModAssets");
+            SetDllDirectory(dll_dir);
             InitLuaEnv();
             LoadAllModScripts();
 

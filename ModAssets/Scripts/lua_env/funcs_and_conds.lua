@@ -64,7 +64,7 @@ AddFunc('test-func', function(name, df, args)
   Logger.info('UnitA', df.data.unitA)
   Logger.info('g', g, g.world.playerUnit)
   for i = 0, args.Length - 1 do
-    Logger.log(i, args[i])
+    Logger.info(i, args[i])
   end
 end)
 

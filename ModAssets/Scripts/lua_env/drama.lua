@@ -46,7 +46,7 @@ function ExecFunc(name, ...)
   print_debug('exec lua func '..tostring(name))
   local fn = ModFuncs[name]
   if fn then
-    fn(name, ...)
+    xpcall(fn, xpcall_err_cb, name, ...)
   else
     print_error("Not found script func "..tostring(name))
   end
@@ -56,8 +56,12 @@ function ExecCond(name, ...)
   print_debug('exec lua cond '..tostring(name))
   local fn = ModConds[name]
   if fn then
-    local r = fn(name, ...)
-    return r and true or false
+    local ok, r = xpcall(fn, xpcall_err_cb, name, ...)
+    if ok then
+      return r and true or false
+    else
+      return false
+    end
   else
     print_error("Not found script func "..tostring(name))
   end

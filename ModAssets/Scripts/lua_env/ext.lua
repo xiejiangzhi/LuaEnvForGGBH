@@ -19,6 +19,7 @@ function cpairs(obj)
 end
 
 function xpcall_err_cb(msg)
-  print_error('[Error]'..msg)
+  print_error('[Error]'..tostring(msg))
   print_error(debug.traceback())
 end
+

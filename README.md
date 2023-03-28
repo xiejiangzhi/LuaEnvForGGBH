@@ -95,3 +95,19 @@ set_enable_debug_log(true) -- 如果为 false , print_debug 就不会输出了
 ```
 
 另外可以考虑 LuaEnv Example 示例效果
+
+
+## Console
+
+不会 Unity ，不知道怎么写，自己就使用 UnityExplorer 的 Console，在里面通过下面的代码运行 Lua
+
+```C#
+// 沆 UELog 方法，可以在 lua 里输出 UnityExplorer log
+MOD_LuaEnv.ModMain.LuaState.RegisterFunction("UELog", typeof(UnityExplorer.CSConsole.ScriptInteraction).GetMethod(nameof(UnityExplorer.CSConsole.ScriptInteraction.Log)));
+
+// 这里面直接执行 lua 代码测试
+MOD_LuaEnv.ModMain.LuaState.DoString(@"
+  print(123)
+  UELog('123fdsa')
+");
+```

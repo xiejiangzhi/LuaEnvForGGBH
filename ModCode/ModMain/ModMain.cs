@@ -39,7 +39,6 @@ namespace MOD_LuaEnv
         public static Lazy<string> InitLuaEnvPath { get; } =
             new Lazy<string>(() => Path.Combine(DefaultScriptDir.Value, "lua_env.lua"));
 
-        private TimerCoroutine corUpdate;
         private static HarmonyLib.Harmony harmony;
 
         /// <summary>
@@ -64,8 +63,6 @@ namespace MOD_LuaEnv
               harmony = new HarmonyLib.Harmony("MOD_LuaEnv");
             }
             harmony.PatchAll(Assembly.GetExecutingAssembly());
-
-            corUpdate = g.timer.Frame(new Action(OnUpdate), 1, true);
         }
 
         /// <summary>
@@ -74,15 +71,6 @@ namespace MOD_LuaEnv
         public void Destroy()
         {
             LuaState = null;
-            g.timer.Stop(corUpdate);
-        }
-
-        /// <summary>
-        /// 每帧调用的函数
-        /// </summary>
-        private void OnUpdate()
-        {
-
         }
 
         private void InitLuaEnv() {

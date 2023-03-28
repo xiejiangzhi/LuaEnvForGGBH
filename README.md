@@ -1,7 +1,8 @@
 LuaEnv
 =======
 
-加入 NLua 到 Mod 环境加，支持从剧情功能以及剧情条件处调用。
+为鬼谷八荒加入 NLua 环境，让所有 Mod 支持执行 lua 脚本
+加入了简单的剧情框架来支持快速添加剧情的条件与函数功能。
 
 
 ## Usage
@@ -80,21 +81,30 @@ end)
 
 通过 json 中的 condition 调用 `lua_MyMod.MyFunc_arg1_arg2`
 
-### Other
+### Hot Reload
 
-其它输出的函数
+可以自己通过 loadfile 的方式来加载自己的脚本来实现实现每次调用方法都加载最新的代码，以提高开发效率
+
+比如
 
 ```lua
-print_debug(string)
-print_warn(string)
-print_error(string)
-
-typeof(obj)
-ctype(obj)
-set_enable_debug_log(true) -- 如果为 false , print_debug 就不会输出了
+AddFunc('xxx', function()
+  -- 每次调用这个功能都重新加载自己脚本目录下的 a.lua 文件
+  loadfile(ModDir..'/a.lua')()
+end)
 ```
 
-另外可以考虑 LuaEnv Example 示例效果
+### Other
+
+每个 mod 都会有自己的全局环境, 里面有自己的 mod id, mod dir
+
+```
+print(ModId, ModDir)
+```
+
+NLua 中可以直接访问所有的 C# 类与接口，所的 GGBH_API 里面的接口都可以直接访问了。
+
+另外可以参考 LuaEnv Example ，以及 接口扩展 项目的代码。
 
 
 ## Console

@@ -83,16 +83,38 @@ end)
 
 ### Hot Reload
 
-可以自己通过 loadfile 的方式来加载自己的脚本来实现实现每次调用方法都加载最新的代码，以提高开发效率
+实现了一个简单的接口 `auto_load` 自动重载加载项目下的脚本，用法同 require, 但会在文件修改后自动重新加载, 这样就可以在游戏中直接修改代码马上生效了。
 
 比如
 
 ```lua
 AddFunc('xxx', function()
-  -- 每次调用这个功能都重新加载自己脚本目录下的 a.lua 文件
-  loadfile(ModDir..'/a.lua')()
+  -- 加载 Scripts 下的 funcs_impl.lua 并调用返回的函数 xxx
+  -- 每次 funcs_impl 更新时，都会重新加载最新的
+  auto_load('funcs_impl').xxx()
 end)
 ```
+
+可以通过 `enable`, `disable` 来关闭自动重载功能
+
+```lua
+auto_load('funcs_impl') --  文件修改自动重新加载
+reloader:disable() -- 关闭自动重载
+auto_load('funcs_impl') --  文件修改不会重新加载
+```
+
+### NLua
+
+lua 环境中可以访问所有 C# 类和方法，通过 `import` 来导入 namespace
+
+比如访问游戏中常用的 `g` 变量， `g.world.playerUnit` 这些在 lua 里也是直接这样写就可以访问了
+
+对于 C# 的数组，也是直接下标访问，基于0的，比如数组元素访问 `arr[0]`, 数组长度 `arr.Length`
+array, list 之类的循环可以使用 `for k, v in luanet.each(arr) do print(k, v) end` 来实现
+
+创建 C# 数组 `luanet.make_array(Int32, { 1, 2, 3 })`, 其它的类型也是直接使用类型名 `String`, `Double` 创建
+
+更多请自行了解 [NLua](https://github.com/NLua/NLua)
 
 ### Other
 

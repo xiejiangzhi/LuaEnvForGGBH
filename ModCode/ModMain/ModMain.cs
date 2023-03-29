@@ -98,7 +98,7 @@ namespace MOD_LuaEnv
             var pkg_path_code = $"package.path = '{dir}'..'/?.lua;'..'{dir}'..'/?/init.lua;'..package.path";
             LuaState.DoString(pkg_path_code);
             LuaState["LuaEnvModID"] = ModID;
-            LuaState["LuaEnvDir"] = dir;
+            LuaState["LuaEnvModDir"] = dir;
             LuaState.DoFile(InitLuaEnvPath.Value);
         }
 

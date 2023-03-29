@@ -1,5 +1,7 @@
+local M = {}
+
 -- df: DramaFunction
-AddFunc('test-func', function(name, df, args)
+function M.test_func(name, df, args)
   Logger.info('Inside lua test func', name, df, args)
   Logger.info('left', df.data.unitLeft)
   Logger.info('right', df.data.unitRight)
@@ -8,10 +10,10 @@ AddFunc('test-func', function(name, df, args)
   for i = 0, args.Length - 1 do
     Logger.info(i, args[i])
   end
-end)
+end
 
 -- cond DramaCondition
-AddCond('test-cond', function(name, dc, args)
+function M.test_cond(name, dc, args)
   Logger.info('Inside lua test cond', name, dc, args)
   Logger.info('unitA', dc.data.unitA)
   Logger.info('unitB', dc.data.unitB)
@@ -22,5 +24,6 @@ AddCond('test-cond', function(name, dc, args)
   end
   -- must return a bool value for condition
   return true
-end)
+end
 
+return M

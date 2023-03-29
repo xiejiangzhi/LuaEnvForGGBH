@@ -1,16 +1,5 @@
-local setfenv = setfenv or function(f, t)
-  f = (type(f) == 'function' and f or debug.getinfo(f + 1, 'f').func)
-  local name
-  local up = 0
-  repeat
-    up = up + 1
-    name = debug.getupvalue(f, up)
-  until name == '_ENV' or name == nil
-  if name then
-    debug.upvaluejoin(f, up, function() return name end, 1) -- use unique upvalue
-    debug.setupvalue(f, up, t)
-  end
-end
+local Util = require 'lua_env.util'
+local AutoReloader = require 'lua_env.auto_reloader'
 
 --[[
 隔离不同 mod 的环境，并将 require 定位到自己的 mod Scripts 目录
@@ -23,6 +12,7 @@ function LoadMod(id, dir, main_path)
   local raw_require = require
   local env = setmetatable({ ModId = id, ModDir = dir }, { __index = _ENV or _G })
   env._G = env
+  env.reloader = AutoReloader.new(dir, env)
 
   env.require = function(module_name)
     local old_path = package.path
@@ -31,13 +21,17 @@ function LoadMod(id, dir, main_path)
     for i, searcher in ipairs(package.searchers) do
       local loader, path = searcher(module_name)
       if loader and path then
-        setfenv(loader, env)
+        Util.setfenv(loader, env)
         m = loader(path)
         break
       end
     end
     package.path = old_path
     return m
+  end
+
+  env.auto_load = function(module)
+    return env.reloader:load(module)
   end
 
   try_call(function()
@@ -48,3 +42,5 @@ function LoadMod(id, dir, main_path)
     end
   end)
 end
+
+

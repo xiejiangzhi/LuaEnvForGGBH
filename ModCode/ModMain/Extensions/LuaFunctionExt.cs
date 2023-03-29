@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MelonLoader;
-using NLua;
+using XLua;
 
 namespace MOD_LuaEnv
 {
-    public static class NLuaExtensions
+    public static class LuaFunctionExt
     {
         public static object[] TryCall(this LuaFunction function, params object[] args)
         {

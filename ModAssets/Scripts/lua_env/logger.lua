@@ -11,17 +11,17 @@ local function concat_objs(...)
 end
 
 function Logger.debug(...)
-  print_debug(concat_objs(...))
+  print('[Debug] '..concat_objs(...))
 end
 
 function Logger.info(...)
-  print('[LuaEnv] '..concat_objs(...))
+  print('[Info] '..concat_objs(...))
 end
 
 function Logger.warn(...)
-  print_warn(concat_objs(...))
+  print('[Warn] '..concat_objs(...))
 end
 
 function Logger.error(...)
-  print_error(concat_objs(...))
+  print('[Error] '..concat_objs(...))
 end

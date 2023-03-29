@@ -7,10 +7,9 @@ using HarmonyLib;
 using MelonLoader;
 using UnhollowerBaseLib;
 using UnityEngine;
-using NLua;
+using XLua;
 
 using Logger = MOD_LuaEnv.Logger;
-using MOD_LuaEnv.Helpers;
 using MOD_LuaEnv.GameHook;
 
 
@@ -29,7 +28,7 @@ namespace MOD_LuaEnv
         private static extern void SetDllDirectory(string lpPathName);
 
 
-        public static Lua LuaState;
+        public static LuaEnv LuaState;
 
         public static string ModID = "WjCh9C";
         public static Lazy<string> ModHomePath { get; } =
@@ -74,36 +73,22 @@ namespace MOD_LuaEnv
         }
 
         private void InitLuaEnv() {
-            LuaState = new Lua();
-            LuaState.State.Encoding = Encoding.UTF8;
+            LuaState = new LuaEnv();
             // var res = LuaState.DoString("return 10 + 3*(5 + 2)")[0];
             // Logger.Msg($"---------test lua DoString result {res}");
 
             Logger.Msg("Init lua env...");
-            LuaState.LoadCLRPackage();
-            LuaState.RegisterFunction(
-                "typeof",
-                typeof(ReflectionHelpers).GetMethod(nameof(ReflectionHelpers.GetActualType))
-            );
-            LuaState.RegisterFunction("ctype", typeof(LuaExportFunc).GetMethod(nameof(LuaExportFunc.GetTypeName)));
-            LuaState.RegisterFunction("cprint", typeof(LuaExportFunc).GetMethod(nameof(LuaExportFunc.CPrint)));
-            LuaState.RegisterFunction("print_debug", typeof(Logger).GetMethod(nameof(Logger.Debug)));
-            LuaState.RegisterFunction("print_warn", typeof(Logger).GetMethod(nameof(Logger.Warning)));
-            LuaState.RegisterFunction("print_error", typeof(Logger).GetMethod(nameof(Logger.Error)));
-            LuaState.RegisterFunction(
-                "set_enable_debug_log",
-                typeof(Logger).GetMethod(nameof(Logger.SetEnableDebugLog))
-            );
+
             var dir = DefaultScriptDir.Value.Replace("\\", "/");
             var pkg_path_code = $"package.path = '{dir}'..'/?.lua;'..'{dir}'..'/?/init.lua;'..package.path";
+            LuaState.Global.Set("LuaEnvModID", ModID);
+            LuaState.Global.Set("LuaEnvModDir", dir);
             LuaState.DoString(pkg_path_code);
-            LuaState["LuaEnvModID"] = ModID;
-            LuaState["LuaEnvModDir"] = dir;
-            LuaState.DoFile(InitLuaEnvPath.Value);
+            LuaState.DoString(@"dofile(LuaEnvModDir..'/lua_env.lua')");
         }
 
         private void LoadAllModScripts() {
-            LuaFunction load_mod_fn = LuaState.GetFunction("LoadMod");
+            LuaFunction load_mod_fn = LuaState.Global.Get<LuaFunction>("LoadMod");
             foreach (DataStruct<string, string> info in g.mod.allModPaths) {
                 if (g.mod.IsLoadMod(info.t1)) {
                     var script_dir = Path.Combine(info.t2, "ModAssets", "Scripts");

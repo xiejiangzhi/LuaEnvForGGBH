@@ -6,7 +6,7 @@ function M.test_func(name, df, args)
   Logger.info('left', df.data.unitLeft)
   Logger.info('right', df.data.unitRight)
   Logger.info('UnitA', df.data.unitA)
-  Logger.info('g', g, g.world.playerUnit)
+  Logger.info('g', CS.g, CS.g.world.playerUnit)
   for i = 0, args.Length - 1 do
     Logger.info(i, args[i])
   end

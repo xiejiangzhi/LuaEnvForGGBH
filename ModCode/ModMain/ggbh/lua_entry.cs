@@ -5,6 +5,7 @@ using HarmonyLib;
 using MelonLoader;
 using UnhollowerBaseLib;
 using UnityEngine;
+using XLua;
 
 using static FairyChickenExtensions;
 
@@ -24,7 +25,7 @@ namespace MOD_LuaEnv.GameHook {
             var fn_name = values[2];
 
             try {
-                ModMain.LuaState.GetFunction("ExecFunc").TryCall(
+                ModMain.LuaState.Global.Get<LuaFunction>("ExecFunc").TryCall(
                     fn_name, __instance, values.Skip(3).Take(values.Length - 3).ToArray()
                 );
             } catch (Exception e) {
@@ -79,7 +80,7 @@ namespace MOD_LuaEnv.GameHook {
                     bool result;
                     bool err = false;
                     try {
-                        var ret = ModMain.LuaState.GetFunction("ExecCond").TryCall(
+                        var ret = ModMain.LuaState.Global.Get<LuaFunction>("ExecCond").TryCall(
                             paramArray[1], __instance, paramArray.Skip(2).Take(paramArray.Length - 2).ToArray()
                         );
                         result = ret.Length > 0 ? (bool)ret[0] : false;

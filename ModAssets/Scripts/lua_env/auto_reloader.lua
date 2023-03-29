@@ -2,7 +2,7 @@ local M = {}
 local MT = {}
 MT.__index = MT
 
-local ST = DateTime(1970, 1, 1)
+local ST = CS.System.DateTime(1970, 1, 1)
 
 function M.new(dir, env)
   return setmetatable({
@@ -30,7 +30,7 @@ function MT:load(module)
 
   local fpath = self.mod_dir..'/'..module:gsub('%.', '/')..'.lua'
   fpath = fpath:gsub('/', '\\')
-  local file_wt = FileInfo(fpath).LastWriteTime
+  local file_wt = CS.System.IO.FileInfo(fpath).LastWriteTime
   local ts = (file_wt - ST).TotalSeconds
   if ts == self.loaded_ts[module] then
     return m

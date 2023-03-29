@@ -1,7 +1,7 @@
 LuaEnv
 =======
 
-为鬼谷八荒加入 NLua 环境，让所有 Mod 支持执行 lua 脚本
+为鬼谷八荒加入 XLua(lua5.4) 环境，让所有 Mod 支持执行 lua 脚本
 加入了简单的剧情框架来支持快速添加剧情的条件与函数功能。
 
 
@@ -37,7 +37,7 @@ AddFunc(fn_name, function(name, df, args)
   print('UnitA', df.data.unitA)
 
   -- g 是 C# 里面定义的，这里可以直接取到，基本上 C# 里面的大多都可以直接在 lua 里调用和实现了
-  -- 具体使用要看 NLua ，我也不太了解
+  -- 具体使用要看 XLua ，我也不太了解
   print('g', g, g.world.playerUnit)
 
   -- args 里面就是调用的所有参数, 所有参数都是字符串
@@ -103,18 +103,18 @@ reloader:disable() -- 关闭自动重载
 auto_load('funcs_impl') --  文件修改不会重新加载
 ```
 
-### NLua
+### XLua
 
-lua 环境中可以访问所有 C# 类和方法，通过 `import` 来导入 namespace
+lua 环境中可以访问所有 C# 类和方法，通过 `CS.{namespace}.xxx` 来访问
 
-比如访问游戏中常用的 `g` 变量， `g.world.playerUnit` 这些在 lua 里也是直接这样写就可以访问了
+比如访问游戏中常用的 `g` 变量， `CS.g.world.playerUnit` 这些在 lua 里也是直接这样写就可以访问了
 
 对于 C# 的数组，也是直接下标访问，基于0的，比如数组元素访问 `arr[0]`, 数组长度 `arr.Length`
 array, list 之类的循环可以使用 `for k, v in luanet.each(arr) do print(k, v) end` 来实现
 
 创建 C# 数组 `luanet.make_array(Int32, { 1, 2, 3 })`, 其它的类型也是直接使用类型名 `String`, `Double` 创建
 
-更多请自行了解 [NLua](https://github.com/NLua/NLua)
+更多请自行了解 [XLua](https://github.com/Tencent/xLua)
 
 ### Other
 
@@ -134,12 +134,9 @@ NLua 中可以直接访问所有的 C# 类与接口，所的 GGBH_API 里面的�
 不会 Unity ，不知道怎么写，自己就使用 UnityExplorer 的 Console，在里面通过下面的代码运行 Lua
 
 ```C#
-// 沆 UELog 方法，可以在 lua 里输出 UnityExplorer log
-MOD_LuaEnv.ModMain.LuaState.RegisterFunction("UELog", typeof(UnityExplorer.CSConsole.ScriptInteraction).GetMethod(nameof(UnityExplorer.CSConsole.ScriptInteraction.Log)));
-
 // 这里面直接执行 lua 代码测试
 MOD_LuaEnv.ModMain.LuaState.DoString(@"
-  print(123)
-  UELog('123fdsa')
+  log = CS.UnityExplorer.CSConsole.ScriptInteraction.Log(123)
+  log('123fdsa')
 ");
 ```

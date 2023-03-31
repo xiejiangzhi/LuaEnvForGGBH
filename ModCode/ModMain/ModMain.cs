@@ -79,20 +79,13 @@ namespace MOD_LuaEnv
             // var res = LuaState.DoString("return 10 + 3*(5 + 2)")[0];
             // Logger.Msg($"---------test lua DoString result {res}");
 
-            Logger.Msg("Init lua env...");
+            Logger.Info("Init lua env...");
             LuaState.LoadCLRPackage();
-            LuaState.RegisterFunction(
-                "typeof",
-                typeof(ReflectionHelpers).GetMethod(nameof(ReflectionHelpers.GetActualType))
-            );
+            LuaState.RegisterFunction("typeof", typeof(ReflectionHelpers).GetMethod(nameof(ReflectionHelpers.GetActualType)));
             LuaState.RegisterFunction("ctype", typeof(LuaExportFunc).GetMethod(nameof(LuaExportFunc.GetTypeName)));
-            LuaState.RegisterFunction("cprint", typeof(LuaExportFunc).GetMethod(nameof(LuaExportFunc.CPrint)));
-            LuaState.RegisterFunction("print_debug", typeof(Logger).GetMethod(nameof(Logger.Debug)));
-            LuaState.RegisterFunction("print_warn", typeof(Logger).GetMethod(nameof(Logger.Warning)));
-            LuaState.RegisterFunction("print_error", typeof(Logger).GetMethod(nameof(Logger.Error)));
             LuaState.RegisterFunction(
-                "set_enable_debug_log",
-                typeof(Logger).GetMethod(nameof(Logger.SetEnableDebugLog))
+                "log_print",
+                typeof(Logger).GetMethod(nameof(Logger.PrintWithColor))
             );
             var dir = DefaultScriptDir.Value.Replace("\\", "/");
             var pkg_path_code = $"package.path = '{dir}'..'/?.lua;'..'{dir}'..'/?/init.lua;'..package.path";

@@ -7,7 +7,7 @@ mod 的 main.lua 中可以从全局变量取到自己的 ModId 与 ModDir
 框架本身不提供 hotreload，可以自己在脚本中每次都执行 loadfile 来加载最新的脚本
 ]]
 function LoadMod(id, dir, main_path)
-  print('[LuaEnv] Start load mod ', id)
+  log_print(ConsoleColor.Gray, '[LuaEnv] Start load mod '..tostring(id))
 
   local raw_require = require
   local env = setmetatable({ ModId = id, ModDir = dir }, { __index = _ENV or _G })

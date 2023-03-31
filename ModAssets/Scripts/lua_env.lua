@@ -1,28 +1,21 @@
 --[[
 export functions
-  cprint(a, b, c, ...) like print
-  print_debug(string)
-  print_warn(string)
-  print_error(string)
-
   typeof(obj)
   ctype(obj)
+  log_print(ConsoleColor, string)
+  call_obj_method
 ]]
 
-function print(...)
-  _G.cprint(...)
-end
-_G.set_enable_debug_log(false)
+print('[LuaEnv] Setup lua env...')
 
-print('Setup lua env...')
+Inspect = require 'lua_env.inspect'
 
 require 'lua_env.import'
 require 'lua_env.ext'
-
 require 'lua_env.logger'
+
 require 'lua_env.mod'
 
 require 'lua_env.drama'
 
 require 'lua_env_test.funcs_and_conds'
-

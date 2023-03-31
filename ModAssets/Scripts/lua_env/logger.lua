@@ -1,5 +1,4 @@
-
-Logger = {}
+Log = {}
 
 local function concat_objs(...)
   local r = {}
@@ -10,18 +9,25 @@ local function concat_objs(...)
   return table.concat(r, '  ')
 end
 
-function Logger.debug(...)
-  print_debug(concat_objs(...))
+local DebugColor = ConsoleColor.DarkGray
+local WarnColor = ConsoleColor.Yellow
+local ErrColor = ConsoleColor.Red
+local InfoColor = ConsoleColor.Gray
+
+function Log.debug(...)
+  log_print(DebugColor, concat_objs(...))
 end
 
-function Logger.info(...)
-  print('[LuaEnv] '..concat_objs(...))
+function Log.info(...)
+  log_print(InfoColor, concat_objs(...))
 end
 
-function Logger.warn(...)
-  print_warn(concat_objs(...))
+function Log.warn(...)
+  log_print(WarnColor, concat_objs(...))
 end
 
-function Logger.error(...)
-  print_error(concat_objs(...))
+function Log.error(...)
+  log_print(ErrColor, concat_objs(...))
 end
+
+Logger = Log

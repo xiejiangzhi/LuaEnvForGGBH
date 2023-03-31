@@ -31,19 +31,19 @@ AddFunc(fn_name, function(name, df, args)
   -- df: DrameFunction 剧情数据，可以取到剧情角色啥的，具体可以看官方代码文档
 
   -- 这里简单演示打印一些数据到控制台
-  print('Inside lua test func', name, df, args)
-  print('left', df.data.unitLeft)
-  print('right', df.data.unitRight)
-  print('UnitA', df.data.unitA)
+  Log.debug('Inside lua test func', name, df, args)
+  Log.debug('left', df.data.unitLeft)
+  Log.debug('right', df.data.unitRight)
+  Log.debug('UnitA', df.data.unitA)
 
   -- g 是 C# 里面定义的，这里可以直接取到，基本上 C# 里面的大多都可以直接在 lua 里调用和实现了
   -- 具体使用要看 NLua ，我也不太了解
-  print('g', g, g.world.playerUnit)
+  Log.debug('g', g, g.world.playerUnit)
 
   -- args 里面就是调用的所有参数, 所有参数都是字符串
   -- 比如 addFeature_lua_MyMod.MyFunc_123_asdf_321， 这里 args 就有3个， 分别是 123， asdf, 321
   for i = 0, args.Length - 1 do
-    print(i, args[i])
+    Log.debug(i, args[i])
   end
 end)
 ```
@@ -64,15 +64,15 @@ AddFunc(cond_name, function(name, dc, args)
   -- dc: DrameCondition 条件数据，可以取到条件角色啥的，具体可以看官方代码文档
 
   -- 这里简单演示打印一些数据到控制台
-  print('Inside lua test cond', name, dc, args)
-  print('unitA', dc.data.unitA)
-  print('unitB', dc.data.unitB)
-  print('unitC', dc.data.unitC)
-  print('args len', args.Length)
+  Log.debug('Inside lua test cond', name, dc, args)
+  Log.debug('unitA', dc.data.unitA)
+  Log.debug('unitB', dc.data.unitB)
+  Log.debug('unitC', dc.data.unitC)
+  Log.debug('args len', args.Length)
 
   -- 条件参数, 所有都是字符串 数字需要 tonumber(args[i]) 转换
   for i = 0, args.Length - 1 do
-    print(i, args[i])
+    Log.debug(i, args[i])
   end
   -- 必须返回一个 bool 值来决定这个条件是否通过， true 通过， false 失败
   return true
@@ -135,11 +135,10 @@ NLua 中可以直接访问所有的 C# 类与接口，所的 GGBH_API 里面的�
 
 ```C#
 // 沆 UELog 方法，可以在 lua 里输出 UnityExplorer log
-MOD_LuaEnv.ModMain.LuaState.RegisterFunction("UELog", typeof(UnityExplorer.CSConsole.ScriptInteraction).GetMethod(nameof(UnityExplorer.CSConsole.ScriptInteraction.Log)));
+MOD_LuaEnv.ModMain.LuaState.RegisterFunction("UELog", typeof(UnityExplorer.ExplorerCore).GetMethod(nameof(UnityExplorer.ExplorerCore.Log)));
 
 // 这里面直接执行 lua 代码测试
 MOD_LuaEnv.ModMain.LuaState.DoString(@"
-  print(123)
   UELog('123fdsa')
 ");
 ```

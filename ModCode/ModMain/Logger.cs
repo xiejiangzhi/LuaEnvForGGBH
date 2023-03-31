@@ -9,8 +9,9 @@ namespace MOD_LuaEnv
     {
         public static bool EnableDebugLog = false;
 
-        public static void SetEnableDebugLog(bool enable) {
-            EnableDebugLog = enable;
+        // for lua export
+        public static void PrintWithColor(ConsoleColor color, string obj) {
+            MelonLogger.Msg(color, obj);
         }
 
         public static void Debug(object obj) {
@@ -19,7 +20,7 @@ namespace MOD_LuaEnv
             }
         }
 
-        public static void Msg(object obj) {
+        public static void Info(object obj) {
             MelonLogger.Msg($"[LuaEnv] {obj}");
         }
 

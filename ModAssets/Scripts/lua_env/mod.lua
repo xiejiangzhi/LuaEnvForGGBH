@@ -1,6 +1,8 @@
 local Util = require 'lua_env.util'
 local AutoReloader = require 'lua_env.auto_reloader'
 
+local LoadedMods = {}
+
 --[[
 隔离不同 mod 的环境，并将 require 定位到自己的 mod Scripts 目录
 mod 的 main.lua 中可以从全局变量取到自己的 ModId 与 ModDir
@@ -38,9 +40,23 @@ function LoadMod(id, dir, main_path)
     -- 两种模式，支持编译好的二进制 lua 文件
     local fn = loadfile(main_path, 'bt', env)
     if fn then
-      fn()
+      local m = fn()
+      LoadedMods[#LoadedMods + 1] = {
+        id = id,
+        dir = dir,
+        main = m
+      }
     end
   end)
 end
 
-
+function DestroyMods()
+  for i, mod_desc in ipairs(LoadedMods) do
+    log_print(ConsoleColor.Gray, "Destroy lua mod "..mod_desc.id)
+    local mod_main = mod_desc.main
+    local destroy_fn = type(mod_main) == 'table' and mod_main.destroy
+    if destroy_fn and type(destroy_fn) == 'function' then
+      try_call(destroy_fn)
+    end
+  end
+end

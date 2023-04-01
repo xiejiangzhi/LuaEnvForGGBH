@@ -3,12 +3,12 @@ export functions
   typeof(obj)
   ctype(obj)
   log_print(ConsoleColor, string)
-  call_obj_method
 ]]
 
 print('[LuaEnv] Setup lua env...')
 
-Inspect = require 'lua_env.inspect'
+Inspect = require 'lib.inspect'
+JSON = require 'lib.json'
 
 require 'lua_env.import'
 require 'lua_env.ext'

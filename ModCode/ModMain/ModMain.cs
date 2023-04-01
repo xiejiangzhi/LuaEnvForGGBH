@@ -70,6 +70,8 @@ namespace MOD_LuaEnv
         /// </summary>
         public void Destroy()
         {
+            LuaFunction destroy_mod_fn = LuaState.GetFunction("DestroyMods");
+            destroy_mod_fn.TryCall();
             LuaState = null;
         }
 

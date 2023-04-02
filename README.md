@@ -103,6 +103,17 @@ reloader:disable() -- 关闭自动重载
 auto_load('funcs_impl') --  文件修改不会重新加载
 ```
 
+
+### 自带的 lib
+
+
+```lua
+-- Inspect
+Log.debug(Inspect(lua_table))
+-- JSON
+Log.debug(Inspect(JSON.decode('{ "a": 123 }')))
+```
+
 ### NLua
 
 lua 环境中可以访问所有 C# 类和方法，通过 `import` 来导入 namespace
@@ -113,6 +124,8 @@ lua 环境中可以访问所有 C# 类和方法，通过 `import` 来导入 name
 array, list 之类的循环可以使用 `for k, v in luanet.each(arr) do print(k, v) end` 来实现
 
 创建 C# 数组 `luanet.make_array(Int32, { 1, 2, 3 })`, 其它的类型也是直接使用类型名 `String`, `Double` 创建
+
+游戏中的官方 API 的数组类型都已经编译为 Il2CppArray 了，比如 `string[]`, lua 中调用时，需要使用 `Il2CppStringArray(luanet.make_array(String, { 'a', 'b', 'c' }))` 来创建 il2cpp array，否则会报无效的参数错误。
 
 更多请自行了解 [NLua](https://github.com/NLua/NLua)
 

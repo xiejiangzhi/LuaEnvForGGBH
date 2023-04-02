@@ -9,19 +9,60 @@ using UnityEngine;
 using static FairyChickenExtensions;
 
 namespace MOD_LuaEnv.GameHook {
+
+    // ignore order to run
+    [HarmonyPatch(typeof(DramaFunction))]
+    [HarmonyPatch("OptionsFunction")]
+    public class LuaFunctionPatch {
+        [HarmonyPrefix]
+        public static bool Prefix(DramaFunction __instance, ref string function, ref DramaFunctionData functionData)
+        {
+            if (string.IsNullOrEmpty(function) || function == "0")
+                return true;
+
+            Logger.Debug($"----- raw funcs：{function}");
+
+            var funcs = function.Split('|');
+            var newFuncsList = new List<string>();
+
+            for (int i = 0; i < funcs.Length; i++) {
+                if (funcs[i].StartsWith("lua_")) {
+                    Logger.Debug($"----- exec lua funcs：{funcs[i]}");
+                    try {
+                        var func_params = funcs[i].Split('_');
+                        var ret = ModMain.LuaState.GetFunction("ExecFunc").TryCall(
+                            func_params[2], __instance, func_params.Skip(2).Take(func_params.Length - 1).ToArray()
+                        );
+                    } catch (Exception e) {
+                        Logger.Error(e);
+                    }
+                } else {
+                    newFuncsList.Add(funcs[i]);
+                }
+            }
+
+            if (newFuncsList.Count > 0) {
+                function = string.Join("|", newFuncsList);
+                Logger.Debug($"----- final funcs：{function}");
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }
+
     // function AddFeature_lua_a.b.c_arg1_arg2_arg3
     [HarmonyPatch(typeof(DramaFunction))]
     [HarmonyPatch("AddFeature")]
-    public class AddFeaturePatch
-    {
+    public class AddFeaturePatch {
         [HarmonyPrefix]
         public static bool Prefix(DramaFunction __instance, Il2CppStringArray values) {
             var rawCommand = string.Join("_", values);
-            Logger.Info($"加载 lua 指令：{rawCommand}");
             if (values.Count <= 2) { return true; }
             var command = values[1];
             if (command != "lua") { return true; }
             var fn_name = values[2];
+            Logger.Info($"exec lua function：{rawCommand}");
 
             try {
                 ModMain.LuaState.GetFunction("ExecFunc").TryCall(
@@ -40,23 +81,11 @@ namespace MOD_LuaEnv.GameHook {
     // condition lua_a.b.c_arg1_arg2_arg3
     [HarmonyPatch(typeof(UnitCondition))]
     [HarmonyPatch("Condition")]
-    public class DramaConditionPatch
-    {
-        public delegate bool ConditionCheck(string[] conditionParam, UnitCondition unitCondition);
-
-        public static Dictionary<string, ConditionCheck> conditionChecks = new Dictionary<string, ConditionCheck>();
-
-        public static void Init() {
-        }
-
+    public class DramaConditionPatch {
         [HarmonyPrefix]
         public static bool Prefix(UnitCondition __instance, ref bool __result)
         {
             var condition = __instance.condition;
-            // Logger.Debug($"条件判断：{condition} " +
-            //            $"unitA: {__instance.data.unitA?.data.unitData.propertyData.GetName()} " +
-            //            $"unitB: {__instance.data.unitB?.data.unitData.propertyData.GetName()} " +
-            //            $"unitC: {__instance.data.unitC?.data.unitData.propertyData.GetName()} ");
             if (condition == "0" || string.IsNullOrEmpty(condition))
                 return true;
 
@@ -88,26 +117,22 @@ namespace MOD_LuaEnv.GameHook {
                         err = true;
                         result = false;
                     }
-                    Logger.Debug(
-                        $"自定义条件：{array[i]} 判断结果：{GetBoolDesc(result)}; err: {GetBoolDesc(err)}"
-                    );
+                    // Logger.Debug(
+                    //     $"自定义条件：{array[i]} 判断结果：{GetBoolDesc(result)}; err: {GetBoolDesc(err)}"
+                    // );
 
                     // or模式，出现true则结束判断
-                    if (result && isOrMode)
-                    {
+                    if (result && isOrMode) {
                         __result = true;
                         return false;
                     }
 
                     // and模式，出现false则结束判断
-                    if (!result && !isOrMode)
-                    {
+                    if (!result && !isOrMode) {
                         __result = false;
                         return false;
                     }
-                }
-                else
-                {
+                } else {
                     newArrayList.Add(array[i]);
                 }
             }
@@ -124,6 +149,7 @@ namespace MOD_LuaEnv.GameHook {
                     return true;
                 }
             }
+
             if (isOrMode) {
                 // or模式，全部false判断失败
                 __result = false;
@@ -133,13 +159,6 @@ namespace MOD_LuaEnv.GameHook {
                 __result = true;
                 return false;
             }
-
-        }
-
-        [HarmonyPostfix]
-        public static void Postfix(UnitCondition __instance, ref bool __result)
-        {
-            // Logger.Debug($"    判断结果：{GetBoolDesc(__result)}");
         }
 
         public static string GetBoolDesc(bool get) => get ? "√" : "×";

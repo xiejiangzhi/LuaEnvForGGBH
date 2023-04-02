@@ -31,7 +31,7 @@ namespace MOD_LuaEnv.GameHook {
                     try {
                         var func_params = funcs[i].Split('_');
                         var ret = ModMain.LuaState.GetFunction("ExecFunc").TryCall(
-                            func_params[2], __instance, func_params.Skip(2).Take(func_params.Length - 1).ToArray()
+                            func_params[1], __instance, func_params.Skip(2).Take(func_params.Length - 1).ToArray()
                         );
                     } catch (Exception e) {
                         Logger.Error(e);

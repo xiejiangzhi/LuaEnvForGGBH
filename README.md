@@ -127,6 +127,8 @@ array, list 之类的循环可以使用 `for k, v in luanet.each(arr) do print(k
 
 游戏中的官方 API 的数组类型都已经编译为 Il2CppArray 了，比如 `string[]`, lua 中调用时，需要使用 `Il2CppStringArray(luanet.make_array(String, { 'a', 'b', 'c' }))` 来创建 il2cpp array，否则会报无效的参数错误。
 
+如果一个对象有多个相同名字的方法，需要通过反射取得一个明确的方法， `lua_env.util.get_method`
+
 更多请自行了解 [NLua](https://github.com/NLua/NLua)
 
 ### Other
@@ -147,7 +149,7 @@ NLua 中可以直接访问所有的 C# 类与接口，所的 GGBH_API 里面的�
 不会 Unity ，不知道怎么写，自己就使用 UnityExplorer 的 Console，在里面通过下面的代码运行 Lua
 
 ```C#
-// 沆 UELog 方法，可以在 lua 里输出 UnityExplorer log
+// 使用 UELog 方法，可以在 lua 里输出 UnityExplorer log
 MOD_LuaEnv.ModMain.LuaState.RegisterFunction("UELog", typeof(UnityExplorer.ExplorerCore).GetMethod(nameof(UnityExplorer.ExplorerCore.Log)));
 
 // 这里面直接执行 lua 代码测试

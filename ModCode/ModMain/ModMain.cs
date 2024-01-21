@@ -83,7 +83,7 @@ namespace MOD_LuaEnv
 
             Logger.Info("Init lua env...");
             LuaState.LoadCLRPackage();
-            LuaState.RegisterFunction("typeof", typeof(ReflectionHelpers).GetMethod(nameof(ReflectionHelpers.GetActualType)));
+            LuaState.RegisterFunction("ctypeof", typeof(ReflectionHelpers).GetMethod(nameof(ReflectionHelpers.GetActualType)));
             LuaState.RegisterFunction("ctype", typeof(LuaExportFunc).GetMethod(nameof(LuaExportFunc.GetTypeName)));
             LuaState.RegisterFunction(
                 "log_print",

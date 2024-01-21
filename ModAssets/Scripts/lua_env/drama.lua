@@ -1,10 +1,9 @@
-local M = {}
-
 local ModFuncs = {}
 local ModConds = {}
 
+local Util = LuaEnv.util
 
-function AddFunc(name, fn)
+function AddFunc(name, fn, args_desc)
   name = tostring(name)
   if ModFuncs[name] then
     Log.warn('[LuaEnv] Replace script func '..name)
@@ -12,10 +11,20 @@ function AddFunc(name, fn)
   else
     Log.info("[LuaEnv] Add script func "..name)
   end
-  ModFuncs[name] = fn
+
+  -- Util.add_mod_func(name, args_desc)
+
+  if args_desc then
+    ModFuncs[name] = function(fn_name, df_or_dc, args)
+      local parsed_args = args_desc and Util.parse_drama_args(df_or_dc, args, args_desc)
+      fn(fn_name, df_or_dc, args, parsed_args)
+    end
+  else
+    ModFuncs[name] = fn
+  end
 end
 
-function AddCond(name, fn)
+function AddCond(name, fn, args_desc)
   name = tostring(name)
   if ModConds[name] then
     Log.warn("[LuaEnv] Replace script cond "..name)
@@ -23,7 +32,11 @@ function AddCond(name, fn)
   else
     Log.info("[LuaEnv] Add script cond "..name)
   end
-  ModConds[name] = fn
+
+  ModFuncs[name] = function(fn_name, dc, args)
+    local parsed_args = args_desc and Util.parse_drama_args(dc, args, args_desc)
+    fn(fn_name, dc, args, parsed_args)
+  end
 end
 
 function ExecFunc(name, ...)

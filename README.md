@@ -16,6 +16,11 @@ LuaEnv
 LuaEnv 会自动查找所有已加载的 mod，并检查是否有 `main.lua`， 如果有就会自动加载。
 每个 `main.lua` 执行 require 时都会优先从自己的 Scripts 目录下查找。
 
+## ctype, ctypeof
+
+ctype(obj) 返回类型名的字符串，obj.GetType().Name 用来检查是否是某个类型
+ctypeof(obj) 返回对象的类型对象 类似 obj.GetType()
+
 
 ### AddFunc
 
@@ -80,6 +85,12 @@ end)
 ```
 
 通过 json 中的 condition 调用 `lua_MyMod.MyFunc_arg1_arg2`
+
+
+## Action
+
+NewLuaCbAction
+NewLuaCbActionOneParam
 
 ### Hot Reload
 

@@ -1,8 +1,6 @@
 local ModFuncs = {}
 local ModConds = {}
 
-local Util = LuaEnv.util
-
 function AddFunc(name, fn, args_desc)
   name = tostring(name)
   if ModFuncs[name] then
@@ -12,11 +10,11 @@ function AddFunc(name, fn, args_desc)
     Log.info("[LuaEnv] Add script func "..name)
   end
 
-  -- Util.add_mod_func(name, args_desc)
+  -- LuaEnv.util.add_mod_func(name, args_desc)
 
   if args_desc then
     ModFuncs[name] = function(fn_name, df_or_dc, args)
-      local parsed_args = args_desc and Util.parse_drama_args(df_or_dc, args, args_desc)
+      local parsed_args = args_desc and LuaEnv.util.parse_drama_args(df_or_dc, args, args_desc)
       fn(fn_name, df_or_dc, args, parsed_args)
     end
   else
@@ -33,9 +31,9 @@ function AddCond(name, fn, args_desc)
     Log.info("[LuaEnv] Add script cond "..name)
   end
 
-  ModFuncs[name] = function(fn_name, dc, args)
-    local parsed_args = args_desc and Util.parse_drama_args(dc, args, args_desc)
-    fn(fn_name, dc, args, parsed_args)
+  ModConds[name] = function(fn_name, dc, args)
+    local parsed_args = args_desc and LuaEnv.util.parse_drama_args(dc, args, args_desc)
+    return fn(fn_name, dc, args, parsed_args)
   end
 end
 
@@ -50,16 +48,16 @@ function ExecFunc(name, ...)
 end
 
 function ExecCond(name, ...)
-  Log.debug('[LuaEnv] exec lua cond '..tostring(name))
   local fn = ModConds[name]
   if fn then
     local ok, r = try_call(fn, name, ...)
+    Log.debug('[LuaEnv] exec lua cond '..tostring(name)..', result: '..tostring(ok and r))
     if ok then
       return r and true or false
     else
       return false
     end
   else
-    Log.error("[LuaEnv] Not found script func "..tostring(name))
+    Log.error("[LuaEnv] Not found script cond "..tostring(name))
   end
 end

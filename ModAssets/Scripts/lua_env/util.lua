@@ -1,7 +1,5 @@
 local M = {}
 
-local DramaHelper = require 'lua_env.drama_helper'
-
 M.setfenv = setfenv or function(f, t)
   f = (type(f) == 'function' and f or debug.getinfo(f + 1, 'f').func)
   local name
@@ -16,6 +14,8 @@ M.setfenv = setfenv or function(f, t)
   end
 end
 
+-- for template type
+-- example: get_generic_method(g.ui:GetType(), 'OpenUI', luanet.ctype(UITownMarketBuy))
 -- slow, call once and save return to use
 function M.get_generic_method(c_type, method_name, generic_type, filter)
   local methods = c_type:GetMethods()
@@ -30,6 +30,8 @@ function M.get_generic_method(c_type, method_name, generic_type, filter)
   end
 end
 
+-- for same name method
+-- get_method(g.events:GetType(), 'On')
 -- slow, call once and save return to use
 function M.get_method(c_type, method_name, filter)
   local methods = c_type:GetMethods()
@@ -53,7 +55,7 @@ end
 --[[
 args_desc: {
   'name', -- don't convert type, use defautl string type
-  { 'name', 'type', 'fn_type' }, -- convert to the type. valid type: number, unit, int
+  { 'name', 'type', 'fn_type' }, -- convert to the type. valid type: string number, unit, int
   ...
 }
 ]]
@@ -76,14 +78,16 @@ function M.parse_drama_args(df_or_dc, args, args_desc)
         v = tonumber(v)
       elseif arg_type == 'unit' then
         if is_df then
-          v = DramaHelper.get_df_unit(df_or_dc, v)
+          v = LuaEnv.drama_helper.get_df_unit(df_or_dc, v)
         else
-          v = DramaHelper.get_dc_unit(df_or_dc, v)
+          v = LuaEnv.drama_helper.get_dc_unit(df_or_dc, v)
         end
       elseif arg_type == 'int' then
         v = math.floor(tonumber(v))
       elseif arg_type == 'mapping' then
         v = arg_desc[3][v]
+      elseif arg_type == 'string' then
+        -- nothing
       else
         Log.error("Invalid arg type "..tostring(arg_type).. ' of '..tostring(arg_name))
       end

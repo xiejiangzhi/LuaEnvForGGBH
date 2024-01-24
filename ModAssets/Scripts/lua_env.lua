@@ -15,13 +15,15 @@ require 'lua_env.ext'
 require 'lua_env.logger'
 
 require 'lua_env.mod'
+require 'lua_env.callback'
+require 'lua_env.event'
 
 require 'lua_env.drama'
 
 require 'lua_env_test.funcs_and_conds'
 
 local DelayLoadLibs = { 'util', 'drama_helper' }
-for i, v in ipairs(DelayLoadLibs) do DelayLoadLibs[k] = true end
+for i, v in ipairs(DelayLoadLibs) do DelayLoadLibs[v] = true end
 LuaEnv = setmetatable({ }, {
   __index = function(t, k)
     if DelayLoadLibs[k] then

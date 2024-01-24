@@ -1,4 +1,3 @@
-local Util = require 'lua_env.util'
 local AutoReloader = require 'lua_env.auto_reloader'
 
 local LoadedMods = {}
@@ -23,7 +22,7 @@ function LoadMod(id, dir, main_path)
     for i, searcher in ipairs(package.searchers) do
       local loader, path = searcher(module_name)
       if loader and path then
-        Util.setfenv(loader, env)
+        LuaEnv.util.setfenv(loader, env)
         m = loader(path)
         break
       end
@@ -60,3 +59,5 @@ function DestroyMods()
     end
   end
 end
+
+

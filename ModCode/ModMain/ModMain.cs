@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using System.Collections;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using HarmonyLib;
@@ -19,15 +21,12 @@ using MOD_LuaEnv.GameHook;
 /// </summary>
 namespace MOD_LuaEnv
 {
-
-
     /// <summary>
     /// 此类是模组的主类
     /// </summary>
     public class ModMain {
         [DllImport("kernel32.dll", CharSet=CharSet.Auto)]
         private static extern void SetDllDirectory(string lpPathName);
-
 
         public static Lua LuaState;
 
@@ -47,8 +46,10 @@ namespace MOD_LuaEnv
         public void Init()
         {
             var dll_dir = Path.Combine(ModHomePath.Value, "ModAssets");
+            // EventActions = new Dictionary<string, object>();
             SetDllDirectory(dll_dir);
             InitLuaEnv();
+            // BindEvents();
             LoadAllModScripts();
 
             //使用了Harmony补丁功能的，需要手动启用补丁。
@@ -85,16 +86,47 @@ namespace MOD_LuaEnv
             LuaState.LoadCLRPackage();
             LuaState.RegisterFunction("ctypeof", typeof(ReflectionHelpers).GetMethod(nameof(ReflectionHelpers.GetActualType)));
             LuaState.RegisterFunction("ctype", typeof(LuaExportFunc).GetMethod(nameof(LuaExportFunc.GetTypeName)));
-            LuaState.RegisterFunction(
-                "log_print",
-                typeof(Logger).GetMethod(nameof(Logger.PrintWithColor))
-            );
+            LuaState.RegisterFunction("log_print", typeof(Logger).GetMethod(nameof(Logger.PrintWithColor)));
+
             var dir = DefaultScriptDir.Value.Replace("\\", "/");
             var pkg_path_code = $"package.path = '{dir}'..'/?.lua;'..'{dir}'..'/?/init.lua;'..package.path";
             LuaState.DoString(pkg_path_code);
+            LuaState["Mod_LuaEnv"] = this;
             LuaState["LuaEnvModID"] = ModID;
             LuaState["LuaEnvModDir"] = dir;
             LuaState.DoFile(InitLuaEnvPath.Value);
+        }
+
+        // public static List<string> BindEventNames = new List<string> {
+        //     EGameType.PlayerAddAppellationType, // 获得道号
+        //     EGameType.PlayerAttackUnitHeartBroken, // 玩家摧毁了一个人的道心
+        //     EGameType.PlayerResurgency, // 玩家摧毁了一个人的道心
+        //     EGameType.TaskComplete, // 任务完成
+        //     EGameType.UnfastenGeomancyDish, // 解开风水盘
+
+        //     EMapType.PlayerMartialStudy, // 学习了秘籍
+        //     EMapType.PlayerInMonstArea, // 玩家进入遇怪区域
+        //     EMapType.PlayerRoleEscapeInMap, // 逃跑回到大地图
+        //     EMapType.PlayerRoleUpGradeBig, // 突破了大境界
+        // };
+
+        // private void BindEvents() {
+        //     Il2CppSystem.Action<ETypeData> callback = (Il2CppSystem.Action<ETypeData>)GamekEventCb;
+        //     for (int i = 0; i < BindEventNames.Length; i++) {
+        //       g.events.On(BindEventNames[i], callback, -1, true);
+        //     }
+        // }
+
+        // private void UnbindEvents() {
+        //     Il2CppSystem.Action<ETypeData> callback = (Il2CppSystem.Action<ETypeData>)GamekEventCb;
+        //     for (int i = 0; i < BindEventNames.Length; i++) {
+        //       g.events.Off(BindEventNames[i], callback, -1, true);
+        //     }
+        // }
+
+        private void GamekEventCb(ETypeData data) {
+            LuaFunction Cb = LuaState.GetFunction("GameEventCallback");
+            Cb.TryCall(data);
         }
 
         private void LoadAllModScripts() {
@@ -110,7 +142,6 @@ namespace MOD_LuaEnv
                 }
             }
         }
-
     }
 
 
